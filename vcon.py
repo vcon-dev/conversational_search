@@ -64,6 +64,49 @@ class Vcon:
                 party_names.append(party.get("tel"))
         return party_names
 
+    def get_agent_mailto(self):
+        for party in self.parties:
+            meta = party.get("meta")
+            if not meta:
+                return None
+            role = meta.get("role")
+            if role == "agent":
+                return party.get("mailto")
+            
+    def get_customer_name(self):
+        for party in self.parties:
+            meta = party.get("meta")
+            if not meta:
+                return None
+            role = meta.get("role")
+            if role == "customer":
+                best_name = party.get("name") or party.get("mailto") or party.get("tel")
+                return best_name
+            
+    # Get the name of the dealer
+    def get_dealer_name(self):
+        # Dealer names are held in the dealer attachment
+        for attachment in self.attachments:
+            if attachment.get("type") == "strolid_dealer":
+                info = json.loads(attachment.get("body"))
+                return info.get("name")
+
+    def get_team_id(self):
+        # Dealer names are held in the dealer attachment
+        for attachment in self.attachments:
+            if attachment.get("type") == "strolid_dealer":
+                info = json.loads(attachment.get("body"))
+                team = info.get("team")
+                return team.get("id")
+
+    def get_team_name(self):
+        # Dealer names are held in the dealer attachment
+        for attachment in self.attachments:
+            if attachment.get("type") == "strolid_dealer":
+                info = json.loads(attachment.get("body"))
+                team = info.get("team")
+                return team.get("name")
+
     def get_dialog_urls(self):
         dialog_urls = []
         for dialog in self.dialog:
