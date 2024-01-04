@@ -18,7 +18,19 @@ st.set_page_config(
 def main():
     st.title("Strolid Conversational Search")
     st.caption("Searches vCons for a given term, powered by Elastic Search. Search for nearly anything, including customer names, dealer names, agent names, phone numbers, and more. Open sidebar on left for advanced options")
-    q = st.text_input(label="Search terms")
+    terms, sort = st.columns(2)
+    with terms:
+        q = st.text_input(label="Search terms")
+    with sort:
+        sort_option = st.selectbox(
+            'Sort By?', ('Newest', 'Oldest', 'Most Relevant'))
+        if sort_option == 'Newest':
+            sort_by = ["created_at:desc", "_score"]
+        elif sort_option == 'Oldest':
+            sort_by = ["created_at:asc", "_score"]
+        else:
+            sort_by = ["_score", "created_at:desc"]
+
 
     # Show the advanced search options in the sidebar
     sidebar = st.sidebar
@@ -76,7 +88,7 @@ def main():
                     }
             },
             "size": num_hits,
-            "sort": ["_score", "created_at"]
+            "sort": sort_by
         })
         # Show the timestamp of this run
         now = datetime.now().strftime('%m/%d/%y %H:%M')
