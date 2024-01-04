@@ -23,7 +23,7 @@ def main():
         q = st.text_input(label="Search terms")
     with sort:
         sort_option = st.selectbox(
-            'Sort By?', ('Newest', 'Oldest', 'Most Relevant'))
+            'Sort by', ('Newest', 'Oldest', 'Most Relevant'))
         if sort_option == 'Newest':
             sort_by = ["created_at:desc", "_score"]
         elif sort_option == 'Oldest':
