@@ -25,11 +25,31 @@ def main():
         sort_option = st.selectbox(
             'Sort by', ('Newest', 'Oldest', 'Most Relevant'))
         if sort_option == 'Newest':
-            sort_by = ["created_at:desc", "_score"]
+            sort_by = [
+                {
+                    "created_at": {
+                        "order": "desc"  # Sorting by 'created_at' in descending order
+                    }
+                }]
         elif sort_option == 'Oldest':
-            sort_by = ["created_at:asc", "_score"]
+            sort_by = [
+                {
+                    "created_at": {
+                        "order": "desc"  # Sorting by 'created_at' in descending order
+                    }
+                }]
         else:
-            sort_by = ["_score", "created_at:desc"]
+            sort_by = [
+                {
+                    "score": {
+                        "order": "desc"
+                    }
+                },
+                {
+                    "created_at": {
+                        "order": "desc"  # Sorting by 'created_at' in descending order
+                    }
+                }]
 
 
     # Show the advanced search options in the sidebar
@@ -89,7 +109,12 @@ def main():
             },
             "size": num_hits,
             "sort": sort_by
-        })
+            }
+        )
+
+    # Process the response
+    for hit in resp['hits']['hits']:
+        print(hit['_source'])  # Prints out the document source
         # Show the timestamp of this run
         now = datetime.now().strftime('%m/%d/%y %H:%M')
         st.subheader("Results")
