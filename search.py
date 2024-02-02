@@ -131,7 +131,7 @@ def main():
             uuid = hit['_source']['uuid']
 
             # Make a new UUID
-            new_uuid = str(uuid.uuid4())
+            new_uuid = uuid.uuid4()
 
             details_url = f"{CONV_DETAIL_URL}\"{uuid}\""
             created_at_str  = hit['_source']['created_at']
