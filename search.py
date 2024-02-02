@@ -188,7 +188,7 @@ def main():
                     f"**Search Score**: {hit['_score']}",
                     unsafe_allow_html=True
                 )
-                st.download_button("Download", v.to_json(), f"{uuid}.vcon", "application/json")
+                st.download_button("Download", v.to_json(), f"{uuid}.vcon", "application/json", key=uuid)
 
 
             # Show the highlighted fields controlled by a checkbox
