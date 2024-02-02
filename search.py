@@ -41,7 +41,7 @@ def main():
         else:
             sort_by = [
                 {
-                    "score": {
+                    "_score": {
                         "order": "desc"
                     }
                 },
