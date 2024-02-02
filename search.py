@@ -6,6 +6,7 @@ import streamlit as st
 from elasticsearch import Elasticsearch
 from vcon import Vcon
 from datetime import datetime
+import uuid
 
 ELASTIC_SEARCH_CLOUD_ID = st.secrets["ELASTIC_SEARCH_CLOUD_ID"]
 ELASTIC_SEARCH_API_KEY = st.secrets["ELASTIC_SEARCH_API_KEY"]
@@ -120,6 +121,7 @@ def main():
         st.subheader("Results")
         st.caption(f"Found {resp['hits']['total']['value']} possible matches, showing {num_hits} matches, completed at {now}.")
 
+    
         # Show a checkbox to only show hits with a summary
         # If the checkbox is checked, only show hits with a summary
         # If the checkbox is not checked, show all hits
@@ -127,8 +129,11 @@ def main():
             # Create a vCon object from the hit
             vcon_dict = hit['_source']
             v = Vcon().from_dict(vcon_dict)
-
             uuid = hit['_source']['uuid']
+
+            # Make a new UUID
+            new_uuid = str(uuid.uuid4())
+
             details_url = f"{CONV_DETAIL_URL}\"{uuid}\""
             created_at_str  = hit['_source']['created_at']
             created_at = datetime.fromisoformat(created_at_str).strftime('%m/%d/%y %H:%M')
@@ -188,12 +193,12 @@ def main():
                     f"**Search Score**: {hit['_score']}",
                     unsafe_allow_html=True
                 )
-                st.download_button("Download", v.to_json(), f"{uuid}.vcon", "application/json", key="download:"+uuid)
+                st.download_button("Download", v.to_json(), f"{uuid}.vcon", "application/json", key="download:"+str(new_uuid))
 
 
             # Show the highlighted fields controlled by a checkbox
             st.caption(f"vCon: {uuid}, {created_at_str}, {duration} sec")
-            if st.checkbox("Show why this result matched", key="result_reason:"+uuid):
+            if st.checkbox("Show why this result matched", key="result_reason:"+str(new_uuid)):
                 for hint in hit['highlight']:
                     st.markdown(
                         f"**{hint}**",
