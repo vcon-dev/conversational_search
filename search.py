@@ -64,7 +64,6 @@ def main():
 
     if not q:
         st.stop()
-
     with st.spinner(text='searching...'):
         # Create the client instance
         client = Elasticsearch(
