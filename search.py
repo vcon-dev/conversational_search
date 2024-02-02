@@ -17,7 +17,7 @@ st.set_page_config(
      )
 
 def main():
-    st.title("Strolid Conversational Search")
+    st.title("Strolid Conversational Search!")
     st.caption("Searches vCons for a given term, powered by Elastic Search. Search for nearly anything, including customer names, dealer names, agent names, phone numbers, and more. Open sidebar on left for advanced options")
     terms, sort = st.columns(2)
     with terms:
