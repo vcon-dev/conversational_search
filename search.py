@@ -112,6 +112,7 @@ def main():
             }
         )
 
+    loop_key = 0
     # Process the response
     for hit in resp['hits']['hits']:
         print(hit['_source'])  # Prints out the document source
@@ -131,7 +132,7 @@ def main():
             uuid = hit['_source']['uuid']
 
             # Make a new UUID
-            new_uuid = uuidlib.uuid4()
+            loop_key = loop_key + 1
 
             details_url = f"{CONV_DETAIL_URL}\"{uuid}\""
             created_at_str  = hit['_source']['created_at']
@@ -192,12 +193,12 @@ def main():
                     f"**Search Score**: {hit['_score']}",
                     unsafe_allow_html=True
                 )
-                st.download_button("Download", v.to_json(), f"{uuid}.vcon", "application/json", key="download:"+new_uuid)
+                st.download_button("Download", v.to_json(), f"{uuid}.vcon", "application/json", key="download:"+loop_key)
 
 
             # Show the highlighted fields controlled by a checkbox
             st.caption(f"vCon: {uuid}, {created_at_str}, {duration} sec")
-            if st.checkbox("Show why this result matched", key="result_reason:"+new_uuid):
+            if st.checkbox("Show why this result matched", key="result_reason:"+loop_key):
                 for hint in hit['highlight']:
                     st.markdown(
                         f"**{hint}**",
