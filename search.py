@@ -193,12 +193,12 @@ def main():
                     f"**Search Score**: {hit['_score']}",
                     unsafe_allow_html=True
                 )
-                st.download_button("Download", v.to_json(), f"{uuid}.vcon", "application/json", key="download:"+loop_key)
+                st.download_button("Download", v.to_json(), f"{uuid}.vcon", "application/json", key="download:"+str(loop_key))
 
 
             # Show the highlighted fields controlled by a checkbox
             st.caption(f"vCon: {uuid}, {created_at_str}, {duration} sec")
-            if st.checkbox("Show why this result matched", key="result_reason:"+loop_key):
+            if st.checkbox("Show why this result matched", key="result_reason:"+str(loop_key)):
                 for hint in hit['highlight']:
                     st.markdown(
                         f"**{hint}**",
