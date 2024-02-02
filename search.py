@@ -6,7 +6,7 @@ import streamlit as st
 from elasticsearch import Elasticsearch
 from vcon import Vcon
 from datetime import datetime
-import uuid
+import uuid as uuidlib
 
 ELASTIC_SEARCH_CLOUD_ID = st.secrets["ELASTIC_SEARCH_CLOUD_ID"]
 ELASTIC_SEARCH_API_KEY = st.secrets["ELASTIC_SEARCH_API_KEY"]
@@ -131,7 +131,7 @@ def main():
             uuid = hit['_source']['uuid']
 
             # Make a new UUID
-            new_uuid = uuid.uuid4()
+            new_uuid = uuidlib.uuid4()
 
             details_url = f"{CONV_DETAIL_URL}\"{uuid}\""
             created_at_str  = hit['_source']['created_at']
