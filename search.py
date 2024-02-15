@@ -24,7 +24,7 @@ def main():
         q = st.text_input(label="Search terms")
     with sort:
         sort_option = st.selectbox(
-            'Sort by', ('Newest', 'Oldest', 'Most Relevant'))
+            'Sort by', ('Most Relevant', 'Newest', 'Oldest' ))
         if sort_option == 'Newest':
             sort_by = [
                 {
