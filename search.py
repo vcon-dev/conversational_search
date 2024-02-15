@@ -114,100 +114,97 @@ def main():
 
     loop_key = 0
     # Process the response
+    now = datetime.now().strftime('%m/%d/%y %H:%M')
+    st.subheader("Results")
+    st.caption(f"Found {resp['hits']['total']['value']} possible matches, showing {num_hits} matches, completed at {now}.")
+
+
+    # Show a checkbox to only show hits with a summary
+    # If the checkbox is checked, only show hits with a summary
+    # If the checkbox is not checked, show all hits
     for hit in resp['hits']['hits']:
-        print(hit['_source'])  # Prints out the document source
-        # Show the timestamp of this run
-        now = datetime.now().strftime('%m/%d/%y %H:%M')
-        st.subheader("Results")
-        st.caption(f"Found {resp['hits']['total']['value']} possible matches, showing {num_hits} matches, completed at {now}.")
+        # Create a vCon object from the hit
+        vcon_dict = hit['_source']
+        v = Vcon().from_dict(vcon_dict)
+        uuid = hit['_source']['uuid']
 
-    
-        # Show a checkbox to only show hits with a summary
-        # If the checkbox is checked, only show hits with a summary
-        # If the checkbox is not checked, show all hits
-        for hit in resp['hits']['hits']:
-            # Create a vCon object from the hit
-            vcon_dict = hit['_source']
-            v = Vcon().from_dict(vcon_dict)
-            uuid = hit['_source']['uuid']
+        # Make a new UUID
+        loop_key = loop_key + 1
 
-            # Make a new UUID
-            loop_key = loop_key + 1
+        details_url = f"{CONV_DETAIL_URL}\"{uuid}\""
+        created_at_str  = hit['_source']['created_at']
+        created_at = datetime.fromisoformat(created_at_str).strftime('%m/%d/%y %H:%M')
+        duration = v.duration()
+        dialog_urls = v.get_dialog_urls()
+        summary = v.summary()
+        dealer_name = v.get_dealer_name()
+        customer_name = v.get_customer_name()
+        team_name = v.get_team_name()
+        agent_email = v.get_agent_mailto()
 
-            details_url = f"{CONV_DETAIL_URL}\"{uuid}\""
-            created_at_str  = hit['_source']['created_at']
-            created_at = datetime.fromisoformat(created_at_str).strftime('%m/%d/%y %H:%M')
-            duration = v.duration()
-            dialog_urls = v.get_dialog_urls()
-            summary = v.summary()
-            dealer_name = v.get_dealer_name()
-            customer_name = v.get_customer_name()
-            team_name = v.get_team_name()
-            agent_email = v.get_agent_mailto()
+        if not summary and show_only_summary:
+            continue        
 
-            if not summary and show_only_summary:
-                continue        
-
-            st.divider()
-            st.markdown(f"**{created_at}, {duration} sec**")
+        st.divider()
+        st.markdown(f"**{created_at}, {duration} sec**")
 
 
-            # Three columns with different widths
-            col1, col2 = st.columns([2,1])
-            with col1:
-                if summary:
-                    st.markdown(
-                        f"**Summary** {summary} [Full Details]({details_url})", 
-                        unsafe_allow_html=True
+        # Three columns with different widths
+        col1, col2 = st.columns([2,1])
+        with col1:
+            if summary:
+                st.markdown(
+                    f"**Summary** {summary} [Full Details]({details_url})", 
+                    unsafe_allow_html=True
+                )
+            else:
+                st.markdown(
+                    f"**No summary available**\n\nFor full details, [click here]({details_url})", 
+                    unsafe_allow_html=True
+                )
+            for url in dialog_urls:
+                st.markdown(
+                    f"[Listen]({url}) to the conversation.",
+                    unsafe_allow_html=True
                     )
-                else:
-                    st.markdown(
-                        f"**No summary available**\n\nFor full details, [click here]({details_url})", 
-                        unsafe_allow_html=True
-                    )
-                for url in dialog_urls:
-                    st.markdown(
-                        f"[Listen]({url}) to the conversation.",
-                        unsafe_allow_html=True
-                        )
-            with col2:
-                st.markdown(
-                    f"**Dealer**: {dealer_name}",
-                    unsafe_allow_html=True
-                )
-                st.markdown(
-                    f"**Team**: {team_name}",
-                    unsafe_allow_html=True
-                )
-                st.markdown(
-                    f"**Customer**: {customer_name}",
-                    unsafe_allow_html=True
-                )
+        with col2:
+            st.markdown(
+                f"**Dealer**: {dealer_name}",
+                unsafe_allow_html=True
+            )
+            st.markdown(
+                f"**Team**: {team_name}",
+                unsafe_allow_html=True
+            )
+            st.markdown(
+                f"**Customer**: {customer_name}",
+                unsafe_allow_html=True
+            )
 
-                st.markdown(
-                    f"**Agent**: {agent_email}",
-                    unsafe_allow_html=True
-                )
+            st.markdown(
+                f"**Agent**: {agent_email}",
+                unsafe_allow_html=True
+            )
 
-                st.markdown(
-                    f"**Search Score**: {hit['_score']}",
-                    unsafe_allow_html=True
-                )
-                st.download_button("Download", v.to_json(), f"{uuid}.vcon", "application/json", key="download:"+str(loop_key))
+            st.markdown(
+                f"**Search Score**: {hit['_score']}",
+                unsafe_allow_html=True
+            )
+            st.download_button("Download", v.to_json(), f"{uuid}.vcon", "application/json", key="download:"+str(loop_key))
 
 
-            # Show the highlighted fields controlled by a checkbox
-            st.caption(f"vCon: {uuid}, {created_at_str}, {duration} sec")
-            if st.checkbox("Show why this result matched", key="result_reason:"+str(loop_key)):
-                for hint in hit['highlight']:
-                    st.markdown(
-                        f"**{hint}**",
-                        unsafe_allow_html=True
-                    )
-                    st.markdown(
-                        f"{hit['highlight'][hint]}",
-                        unsafe_allow_html=True
-                    )   
+        # Show the highlighted fields controlled by a checkbox
+        st.caption(f"vCon: {uuid}, {created_at_str}, {duration} sec")
+        if st.checkbox("Show why this result matched", key="result_reason:"+str(loop_key)):
+            for hint in hit['highlight']:
+                st.markdown(
+                    f"**{hint}**",
+                    unsafe_allow_html=True
+                )
+                st.markdown(
+                    f"{hit['highlight'][hint]}",
+                    unsafe_allow_html=True
+                )   
 
 # Run main()
 
