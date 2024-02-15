@@ -116,7 +116,7 @@ def main():
     # Process the response
     now = datetime.now().strftime('%m/%d/%y %H:%M')
     st.subheader("Results")
-    st.caption(f"Found {resp['hits']['total']['value']} possible matches, showing {num_hits} matches, completed at {now}.")
+    st.caption(f"Found {resp['hits']['total']['value']} possible matches, showing at most {num_hits} matches, completed at {now}.")
 
 
     # Show a checkbox to only show hits with a summary
